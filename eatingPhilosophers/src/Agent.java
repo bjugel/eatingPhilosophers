@@ -36,6 +36,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 		//TODO fill change initialize to different initializations
 		//TODO change init methods in master
 		//TODO remove some arguments here
+		//testings
 	}
 	/**
 	 * CARE all forks have to be initialized before and next agents have to be given called.

@@ -1,5 +1,7 @@
 import java.util.*;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,17 +13,16 @@ public class Master {
 	public static void main(String[] args) throws RemoteException {
 		
 		int numberOfPhilo = 41;
-		int numberOfSeats = 5;
+		int numberOfSeats = 33;
 		int numberOfAgents = 4;
-		int startPort = 5200;
+		int startPort = 5400;
 
 		List<AgentInterface> agentList;
 		
 		agentList= new ArrayList<AgentInterface>();
 		
 		initializeEnvironment(numberOfPhilo, numberOfSeats, numberOfAgents, startPort, agentList);				
-		giveEachAgentTheOtherAgentsAndNext(agentList);
-		getPhilosophersUpAndMeditating(agentList);
+		
 		
 		for(AgentInterface agent1:agentList){
 			System.out.println("Agent:"+agent1.toString()+"has other agent" + agent1.getOtherAgents().get(0).toString());
@@ -68,23 +69,81 @@ public class Master {
 			List<AgentInterface> agentList) {
 		AgentInterface currAgent;
 		try{
-			for(int i = 0; i < numberOfAgents; i++){
-
-				agentList.add((AgentInterface)Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));//CB changed to agent
-				currAgent=agentList.get(i);
-				if(i==0){
-					currAgent.initialzePhilos(numberOfPhilo/numberOfAgents+numberOfPhilo%numberOfAgents, 
-							numberOfSeats/numberOfAgents+numberOfSeats%numberOfAgents,0, 0); 
-				}else{
-					currAgent.initialzePhilos(numberOfPhilo/numberOfAgents, numberOfSeats/numberOfAgents,
-										i*numberOfPhilo/numberOfAgents+numberOfPhilo%numberOfAgents, 
-										i*numberOfSeats/numberOfAgents+numberOfSeats%numberOfAgents); 
-				}
-				
-			}
+			getAllAgents(numberOfAgents, startPort, agentList);
+			
+			giveEachAgentTheOtherAgentsAndNext(agentList);
+			
+			initializeForksForAllAgents(  numberOfSeats, numberOfAgents,agentList);
+			initializeSeatsForAllAgents(  numberOfSeats, numberOfAgents,agentList);
+			
+			initializePhilosophesForAllAgents(numberOfPhilo, numberOfAgents, agentList);
+			
+			getPhilosophersUpAndMeditating(agentList);
+			
 			
 		} catch(Exception ex){
 			ex.printStackTrace();
+		}
+	}
+
+
+
+	private static void initializeSeatsForAllAgents(int numberOfSeats, int numberOfAgents,
+			List<AgentInterface> agentList) throws RemoteException {
+		AgentInterface currAgent;
+		for(int i = 0; i < numberOfAgents; i++){
+			currAgent=agentList.get(i);
+			if(i==0){
+				currAgent.initSeats(numberOfSeats/numberOfAgents+numberOfSeats%numberOfAgents,0); 
+			}else{
+				currAgent.initSeats(numberOfSeats/numberOfAgents,	i*numberOfSeats/numberOfAgents+numberOfSeats%numberOfAgents); 
+			}
+			
+		}
+		
+	}
+
+
+
+	private static void initializeForksForAllAgents(int numberOfSeats, int numberOfAgents,
+			List<AgentInterface> agentList) throws RemoteException {
+		
+		AgentInterface currAgent;
+		for(int i = 0; i < numberOfAgents; i++){
+			currAgent=agentList.get(i);
+			if(i==0){
+				currAgent.initForks(numberOfSeats/numberOfAgents+numberOfSeats%numberOfAgents);
+			}else{
+				currAgent.initForks(numberOfSeats/numberOfAgents); 
+			}		
+		}
+		
+	}
+
+
+
+	private static void initializePhilosophesForAllAgents(int numberOfPhilo,  int numberOfAgents,
+			List<AgentInterface> agentList) throws RemoteException {
+		AgentInterface currAgent;
+		for(int i = 0; i < numberOfAgents; i++){
+			currAgent=agentList.get(i);
+			if(i==0){
+				currAgent.initialzePhilos(numberOfPhilo/numberOfAgents+numberOfPhilo%numberOfAgents,0); 
+			}else{
+				currAgent.initialzePhilos(numberOfPhilo/numberOfAgents,	i*numberOfPhilo/numberOfAgents+numberOfPhilo%numberOfAgents); 
+			}
+			
+		}
+	}
+
+
+
+	private static void getAllAgents(int numberOfAgents, int startPort, List<AgentInterface> agentList)
+			throws NotBoundException, MalformedURLException, RemoteException {
+		for(int i = 0; i < numberOfAgents; i++){
+
+			agentList.add((AgentInterface)Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));//CB changed to agent
+			
 		}
 	}
 	

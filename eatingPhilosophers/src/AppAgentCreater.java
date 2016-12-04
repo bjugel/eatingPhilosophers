@@ -4,7 +4,7 @@ import java.rmi.registry.Registry;
 
 public class AppAgentCreater {
 	
-	static int startPort = 5200;
+	static int startPort = 5400;
 	static int numberOfAgents = 4;
 
 	public static void main(String[] args) throws RemoteException {
@@ -15,5 +15,5 @@ public class AppAgentCreater {
 		}
 	}
 	
-	//dont initialize agents but an agent factory or something of that sort that we give .
+	//TODO dont initialize agents but an agent factory or something of that sort that we give .
 }

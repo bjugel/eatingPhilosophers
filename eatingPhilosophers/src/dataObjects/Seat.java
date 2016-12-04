@@ -32,6 +32,10 @@ public class Seat {
 	}
 	
 	
+	public int getSeatID() {
+		return seatID;
+	}
+
 	public void releaseForks(){
 		leftFork.unlock();
 		rightFork.unlock();
@@ -53,6 +57,14 @@ public class Seat {
 	 */
 	public boolean isTaken(){
 		return taken.isLocked();
+	}
+
+	public ReentrantLock getLeftFork() {
+		return leftFork;
+	}
+
+	public ReentrantLock getRightFork() {
+		return rightFork;
 	}
 	
 }

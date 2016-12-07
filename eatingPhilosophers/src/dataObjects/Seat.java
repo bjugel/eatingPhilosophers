@@ -7,69 +7,38 @@ import sun.management.Agent;
 
 public class Seat {
 	private AtomicBoolean taken;
-	private TableFork leftFork;
-	private TableFork rightFork;
 	int seatID;
-	Agent agent;
+
 	
-	public Seat(int pId,TableFork leftFork,TableFork rightFork){
-		this.leftFork=leftFork;
-		this.rightFork=rightFork;
+	public Seat(int pId){
 		seatID = pId;
 	}
-	
-	/**
-	 * tryes to take the forks and blocks untill both are taken 
-	 * Deadlocks cant occur since every second place switches the fork first taken 
-	 * therefore assuring that its impossible for all places to have one fork while waiting
-	 * for the other
-	 */
-	public void takeForks(){
-//		if(seatID%2==0){
-//			leftFork.lock();
-//			rightFork.lock();
-//		}else {
-//			rightFork.lock();
-//			leftFork.lock();
-//		}
-		//TODO implement new
-	}
-	
 	
 	public int getSeatID() {
 		return seatID;
 	}
 
-	public void releaseForks(){
-//		leftFork.unlock();
-//		rightFork.unlock();
-		//TODO reimplement
+
+	/**
+	 * Sit down
+	 * @return if you could sit down on the seat. Returns false if the seat was already taken
+	 */
+	public synchronized boolean  take(){
+		return taken.compareAndSet(false, true);
 	}
 	/**
-	 * just sit down.
+	 * leave the seat throws exception if seat is already left (that shouldnt happen ever.)
+	 * @throws Exception
 	 */
-	public void take(){
-		//this.taken.lock();
-		//TODO reimplement
+	public void leave() throws Exception{
+		boolean retval;
+		retval =taken.compareAndSet(true, false);
+		if (!retval)
+			throw new Exception("cant leave a left chair.");
 	}
-	//lays down the forks and leaves the table
-	public void leave(){
-		releaseForks();
-//		this.taken.unlock();
-		//TODO reimplement
-	}
-	/**
-	 * 
-	 * @return weather or not the seat is currently occupied
-	 */
-	public synchronized boolean isTaken(){
-		return taken.get();
-	}
+	
 
-	public TableFork getRightFork() {
-		return this.rightFork;
 
-	}
 
 
 	

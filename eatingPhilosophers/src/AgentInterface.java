@@ -19,5 +19,6 @@ public interface AgentInterface extends Remote {
 	public ArrayList<AgentInterface> getOtherAgents()throws RemoteException;
 	public void giveNextAgent(AgentInterface nextAgent)throws RemoteException;
 	public int getAgentID()throws RemoteException;
+	public int sitDown(int callingAgentID)throws RemoteException;
 
 }

@@ -15,7 +15,7 @@ public class Master {
 		int numberOfPhilo = 41;
 		int numberOfSeats = 33;
 		int numberOfAgents = 4;
-		int startPort = 5900;
+		int startPort = 5100;
 
 		List<AgentInterface> agentList;
 		

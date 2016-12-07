@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import dataObjects.Philosopher;
 import dataObjects.Seat;
-
+import dataObjects.TableFork;
 import java.rmi.Naming;
 
 
@@ -15,7 +15,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 	private ArrayList<AgentInterface> otherAgents = new ArrayList <AgentInterface>();
 	private ArrayList<Philosopher> philoList = new ArrayList<Philosopher>();
 	private ArrayList<Seat> seatList = new ArrayList<Seat>();
-	private ArrayList<ReentrantLock> forks = new ArrayList<ReentrantLock>();//BJ
+	private ArrayList<TableFork> forks = new ArrayList<TableFork>();//BJ
 	private int agentID=0;
 	private AgentInterface nextAgent;
 	public Agent() throws RemoteException{
@@ -31,9 +31,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 		this.agentID=agentID;
 		
 	}
-	public void lockFirstFork(){
-		this.forks.get(0).lock();
-	}
+
 	
 	/**
 	 * should be called before startPhilosophers() is called in order to initiallize all the philosophers that should run. 
@@ -60,10 +58,11 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 			if (i+1<numberOfSeats){
 				seatList.add(new Seat(firstSeatID+i, forks.get(i), forks.get(i+1)));
 			}else{
-				ReentrantLock rightfork=nextAgent.getForks().get(0);
+				//TableFork rightfork=nextAgent.getForks().get(0);
+				TableFork rightfork=this.getForks().get(0);
 				Seat temp =new Seat(firstSeatID+i, forks.get(i), rightfork);
 				seatList.add(temp);
-				//System.out.println(temp.getSeatID());
+				/*//System.out.println(temp.getSeatID());
 				ReentrantLock tempLock= nextAgent.getForks().get(0);
 				ReentrantLock tempLock2= nextAgent.getForks().get(0);
 				System.out.println(tempLock2.equals(tempLock));
@@ -79,19 +78,19 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 				nextAgent.getForks().get(0).lock();
 				System.out.println(nextAgent.getForks().get(0));
 				nextAgent.lockFirstFork();
-				System.out.println(nextAgent.getForks().get(0));
+				System.out.println(nextAgent.getForks().get(0));*/
 				
 				//System.out.println(nextAgent.getForks().get(0));
 			}
 		}
 		System.out.println("Agent"+agentID+ " initializing "+numberOfSeats+ " Seats."); 
-		System.out.println("Verifying that last Seats["+(firstSeatID+numberOfSeats-1)+ "] fork equals next agents firstfork: "+ (seatList.get(numberOfSeats-1).getRightFork().equals(nextAgent.getForks().get(0)))); 
+		//System.out.println("Verifying that last Seats["+(firstSeatID+numberOfSeats-1)+ "] fork equals next agents firstfork: "+ (seatList.get(numberOfSeats-1).getRightFork().equals(nextAgent.getForks().get(0)))); 
 		//TODO finish create seats and give them forks that are already initialized else we gett nullpointer. evtually create an forks not initialized exception.
 	}
 	public void initForks(int numberOfSeats) {
 		forks.clear();
 		for (int i = 0; i < numberOfSeats; i++) {
-			ReentrantLock temp = new ReentrantLock(true);
+			TableFork temp = new TableFork();
 			forks.add(temp);
 			System.out.println(temp);
 			//ReentrantLock a;
@@ -109,7 +108,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 		}
 	}
 	
-	public ArrayList<ReentrantLock> getForks() {
+	public ArrayList<TableFork> getForks() {
 		return forks;
 	}
 	public ArrayList<Seat> getSeats() {

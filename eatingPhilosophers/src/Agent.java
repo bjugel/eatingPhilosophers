@@ -22,6 +22,10 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 		super();
 	}
 	
+	//test
+	
+	//test2
+	//test3
 	public Agent(int agentID) throws RemoteException{
 		super();
 		this.agentID=agentID;

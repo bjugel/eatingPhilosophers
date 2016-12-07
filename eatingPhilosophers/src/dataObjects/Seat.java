@@ -10,8 +10,9 @@ public class Seat {
 	int seatID;
 
 	
-	public Seat(int pId){
-		seatID = pId;
+	public Seat(int seatID){
+		this.seatID = seatID;
+		this.taken=new AtomicBoolean(false);
 	}
 	
 	public int getSeatID() {

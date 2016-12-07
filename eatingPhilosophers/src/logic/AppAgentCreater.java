@@ -1,10 +1,11 @@
+package logic;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class AppAgentCreater {
 	
-	static int startPort = 5000;
+	static int startPort = 5800;
 	static int numberOfAgents = 4;
 
 	public static void main(String[] args) throws RemoteException {

@@ -1,3 +1,4 @@
+package logic;
 import java.util.*;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -15,7 +16,7 @@ public class Master {
 		int numberOfPhilo = 41;
 		int numberOfSeats = 33;
 		int numberOfAgents = 4;
-		int startPort = 5000;
+		int startPort = 5800;
 
 		List<AgentInterface> agentList;
 		

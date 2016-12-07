@@ -1,3 +1,4 @@
+package logic;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -20,5 +21,6 @@ public interface AgentInterface extends Remote {
 	public void giveNextAgent(AgentInterface nextAgent)throws RemoteException;
 	public int getAgentID()throws RemoteException;
 	public int sitDown(int callingAgentID)throws RemoteException;
+	public void standUp(int seatID)throws Exception;
 
 }

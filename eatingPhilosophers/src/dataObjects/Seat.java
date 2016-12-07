@@ -2,12 +2,14 @@ package dataObjects;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import sun.management.Agent;
+
 public class Seat {
 	private ReentrantLock taken;
 	private ReentrantLock leftFork;
 	private ReentrantLock rightFork;
 	int seatID;
-	
+	Agent agent;
 	
 	public Seat(int pId,ReentrantLock leftFork,ReentrantLock rightFork){
 		this.leftFork=leftFork;

@@ -13,6 +13,7 @@ public interface AgentInterface extends Remote {
 	public void initSeats(int numberOfSeats, int firstSeatID)throws RemoteException;
 	public ArrayList<ReentrantLock> getForks()throws RemoteException;
 	public ArrayList<Seat> getSeats()throws RemoteException;
+	public void lockFirstFork() throws RemoteException;
 	public void startPhilosophers()throws RemoteException;
 	public void giveOtherAgent(AgentInterface agent) throws RemoteException;
 	public ArrayList<AgentInterface> getOtherAgents()throws RemoteException;

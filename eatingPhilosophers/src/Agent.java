@@ -27,7 +27,9 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 		this.agentID=agentID;
 		
 	}
-	
+	public void lockFirstFork(){
+		this.forks.get(0).lock();
+	}
 	
 	/**
 	 * should be called before startPhilosophers() is called in order to initiallize all the philosophers that should run. 
@@ -58,6 +60,11 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 				Seat temp =new Seat(firstSeatID+i, forks.get(i), rightfork);
 				seatList.add(temp);
 				//System.out.println(temp.getSeatID());
+				ReentrantLock tempLock= nextAgent.getForks().get(0);
+				ReentrantLock tempLock2= nextAgent.getForks().get(0);
+				System.out.println(tempLock2.equals(tempLock));
+				System.out.println(tempLock2==tempLock);
+				System.out.println(nextAgent.getForks().get(0)==tempLock);
 				System.out.println(seatList.get(i).getSeatID());
 				//System.out.println("1Verifying that last Seats["+(firstSeatID +i)+ "] fork equals next agents firstfork: "+ (seatList.get(i).getRightFork().equals(nextAgent.getForks().get(0))));
 				System.out.println(seatList.get(i).getRightFork());
@@ -67,6 +74,9 @@ public class Agent extends UnicastRemoteObject implements AgentInterface{
 				System.out.println(nextAgent.getForks().get(0));
 				nextAgent.getForks().get(0).lock();
 				System.out.println(nextAgent.getForks().get(0));
+				nextAgent.lockFirstFork();
+				System.out.println(nextAgent.getForks().get(0));
+				
 				//System.out.println(nextAgent.getForks().get(0));
 			}
 		}

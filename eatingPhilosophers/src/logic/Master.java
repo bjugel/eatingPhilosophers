@@ -13,10 +13,10 @@ public class Master {
 
 	public static void main(String[] args) throws RemoteException {
 		
-		int numberOfPhilo = 41;
-		int numberOfSeats = 33;
+		int numberOfPhilo = 11;//41
+		int numberOfSeats = 6;
 		int numberOfAgents = 4;
-		int startPort = 5800;
+		int startPort = 5100;
 
 		List<AgentInterface> agentList;
 		

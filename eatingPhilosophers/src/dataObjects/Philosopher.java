@@ -44,6 +44,7 @@ public class Philosopher implements Runnable {
 				eat();
 				
 			}
+			System.out.printf("x %03d finished \n",this.philoID);
 			
 
 		} catch (RemoteException e) {
@@ -65,16 +66,18 @@ public class Philosopher implements Runnable {
 	 * @throws Exception
 	 */
 	private void eat() throws RemoteException, InterruptedException, Exception {
-		this.seatID = agent.sitDown(agent.getAgentID());
+		this.seatID = agent.giveSeat(agent.getAgentID());
 		if (this.seatID == -1) {
 			//System.out.printf("Philosopher didnt find a Seat. PhiloID: \t%03d \n", this.philoID);
 			this.eat();
 		} else {
-			System.out.printf("Philosopher sitting down at Seat%03d\tPhiloID:\t%03d\n for the \t%03d time ", this.seatID, this.philoID,this.eatingCounter+1);
+			System.out.printf("Philosopher sitting down at Seat%03d\tPhiloID:\t%03d for the \t%03d time \n", this.seatID, this.philoID,this.eatingCounter+1);
+			this.agent.giveForks(seatID,philoID);
 
-			Thread.sleep(1000);
+			Thread.sleep(10);
 			System.out.printf("Philosopher standing up from Seat%03d\tPhiloID:\t%03d\n", this.seatID, this.philoID);
 			this.eatingCounter+=1;
+			this.agent.releaseForks(seatID,this.philoID);
 			this.agent.standUp(seatID);
 		}
 	}

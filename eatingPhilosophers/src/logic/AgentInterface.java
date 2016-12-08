@@ -20,7 +20,10 @@ public interface AgentInterface extends Remote {
 	public ArrayList<AgentInterface> getOtherAgents()throws RemoteException;
 	public void giveNextAgent(AgentInterface nextAgent)throws RemoteException;
 	public int getAgentID()throws RemoteException;
-	public int sitDown(int callingAgentID)throws RemoteException;
+	public int giveSeat(int callingAgentID)throws RemoteException;
 	public void standUp(int seatID)throws Exception;
-
+	public boolean lockFirstFork() throws RemoteException;
+	public void giveForks(int seatID,int philoID) throws RemoteException;
+	public void releaseForks(int seatID,int philoID) throws RemoteException, Exception;
+	public void releaseFirstFork() throws RemoteException, Exception;
 }

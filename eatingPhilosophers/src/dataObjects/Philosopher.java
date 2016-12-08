@@ -19,7 +19,7 @@ public class Philosopher implements Runnable {
 
 	private final int philoID;
 	STATE state;
-	int eatingCounter = 0;
+	int eatingCounter;
 	boolean hungry = false;
 	int seatID;
 	AgentInterface agent;
@@ -31,6 +31,7 @@ public class Philosopher implements Runnable {
 		super();
 		this.philoID = philoID;
 		this.seatID = -1;
+		this.eatingCounter=0;
 		state = STATE.SLEEPING;// new STATE((int)Math.random() % 5);
 		this.agent = yourAgent;
 	}
@@ -39,16 +40,11 @@ public class Philosopher implements Runnable {
 	public void run() {
 		try {
 			System.out.printf("Iam Philosopher%03d with Agent Agent%03d\n", this.philoID, agent.getAgentID());
-			this.seatID = agent.sitDown(agent.getAgentID());
-			if (this.seatID == -1)
-				System.out.printf("Philosopher didnt find a Seat. PhiloID: \t%03d \n", this.philoID);
-			else {
-				System.out.printf("Philosopher sitting down at Seat%03d\tPhiloID:\t%03d\n", this.seatID, this.philoID);
-
-				Thread.sleep(1000);
-				System.out.printf("Philosopher standing up from Seat%03d\tPhiloID:\t%03d\n", this.seatID, this.philoID);
-				this.agent.standUp(seatID);
+			for (int i = 0; i < 10; i++) {
+				eat();
+				
 			}
+			
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -61,6 +57,26 @@ public class Philosopher implements Runnable {
 
 		// TODO for loop
 
+	}
+
+	/**
+	 * @throws RemoteException
+	 * @throws InterruptedException
+	 * @throws Exception
+	 */
+	private void eat() throws RemoteException, InterruptedException, Exception {
+		this.seatID = agent.sitDown(agent.getAgentID());
+		if (this.seatID == -1) {
+			//System.out.printf("Philosopher didnt find a Seat. PhiloID: \t%03d \n", this.philoID);
+			this.eat();
+		} else {
+			System.out.printf("Philosopher sitting down at Seat%03d\tPhiloID:\t%03d\n for the \t%03d time ", this.seatID, this.philoID,this.eatingCounter+1);
+
+			Thread.sleep(1000);
+			System.out.printf("Philosopher standing up from Seat%03d\tPhiloID:\t%03d\n", this.seatID, this.philoID);
+			this.eatingCounter+=1;
+			this.agent.standUp(seatID);
+		}
 	}
 
 	@Override

@@ -131,7 +131,7 @@ public class Master {
 			if(i==0){
 				currAgent.initialzePhilos(numberOfPhilo/numberOfAgents+numberOfPhilo%numberOfAgents,0); 
 			}else{
-				currAgent.initialzePhilos(numberOfPhilo/numberOfAgents,	i*numberOfPhilo/numberOfAgents+numberOfPhilo%numberOfAgents); 
+				currAgent.initialzePhilos(numberOfPhilo/numberOfAgents,	i*(numberOfPhilo/numberOfAgents)+numberOfPhilo%numberOfAgents); 
 			}
 			
 		}

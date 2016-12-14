@@ -21,7 +21,7 @@ public class Master {
 		
 		int numberOfPhilo = 40;
 		int numberOfSeats = 20;
-		int numberOfAgents = 4;
+		int numberOfAgents = 5;
 		int startPort = 5500;
 		int tolerance =20;
 		int secondsToWait=60;
@@ -275,8 +275,8 @@ public class Master {
 			throws NotBoundException, MalformedURLException, RemoteException {
 		for(int i = 0; i < numberOfAgents; i++){
 
-			agentList.add((AgentInterface)Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));//CB changed to agent
-			
+			//agentList.add((AgentInterface)Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));//CB changed to agent
+			agentList.add((AgentInterface)Naming.lookup("rmi://192.168.56.103:" + (startPort + i) + "/agent"));//CB changed to agent	
 		}
 	}
 	

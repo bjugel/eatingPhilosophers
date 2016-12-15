@@ -21,8 +21,8 @@ public class Master {
 		
 		int numberOfPhilo = 40;
 		int numberOfSeats = 20;
-		int numberOfAgents = 5;
-		int startPort = 5500;
+		int numberOfAgents = 4;
+		int startPort = 1099;
 		int tolerance =20;
 		int secondsToWait=60;
 		
@@ -176,6 +176,7 @@ public class Master {
 	private static void setPhiloHungry(List<AgentInterface> agentList) throws RemoteException {
 		agentList.get(2).setPhiloHungry(1);
 		agentList.get(0).setPhiloHungry(4);
+		//TODO change
 		/*for(AgentInterface agent: agentList){
 			agent.setPhiloHungry(0);
 		}*/
@@ -276,7 +277,9 @@ public class Master {
 		for(int i = 0; i < numberOfAgents; i++){
 
 			//agentList.add((AgentInterface)Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));//CB changed to agent
-			agentList.add((AgentInterface)Naming.lookup("rmi://192.168.56.103:" + (startPort + i) + "/agent"));//CB changed to agent	
+			//agentList.add((AgentInterface)Naming.lookup("rmi://192.168.56.103:" + (startPort + i) + "/agent"));//CB changed to agent	
+			Registry remoteRegistry = LocateRegistry.getRegistry("192.168.56.101",startPort+i);
+			agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
 		}
 	}
 	

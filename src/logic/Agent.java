@@ -246,7 +246,16 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 			philoList.add(new Philosopher(firstPhiloID + i, this));
 		}
 	}
-
+	
+	public void addAndStartPhilos(int philos, int firstPhiloID,long endTime) {
+		for (int i = 0; i < philos; i++) {
+			Philosopher p=new Philosopher(firstPhiloID + i, this);
+			p.setEndTime(endTime);
+			new Thread(p).start();
+			philoList.add(p);
+		}
+	}
+	
 	public ArrayList<TableFork> getForks() {
 		return forks;
 	}
@@ -650,6 +659,17 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 				p.notify();
 			}
 		}
+	}
+	
+	public int getHighestPhiloId(){
+		int highestPhiloID=0;
+		for(Philosopher p: philoList){
+			if(p.getPhiloID()>highestPhiloID){
+				highestPhiloID=p.getPhiloID();
+			}
+		}
+		return highestPhiloID;
+		
 	}
 
 }

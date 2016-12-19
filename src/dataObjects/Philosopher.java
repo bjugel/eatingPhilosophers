@@ -129,6 +129,11 @@ public class Philosopher implements Runnable {
 		return hasEaten;
 	}
 	
+	public int getPhiloID() {
+		return philoID;
+	}
+
+
 	//CB
 	private void goSleep() throws InterruptedException {
 		this.state = STATE.SLEEPING;

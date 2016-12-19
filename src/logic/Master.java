@@ -28,8 +28,10 @@ public class Master {
 		
 		String listOfSeatsToDelete[] = new String[]{"A0S3","A1S0","A1S4","A3S4","A0S2","A1S2","A3S2","A3S4"}; //Ax = id of agent || Sy = index of seat !!!Make sure that you are initialize this seats 
 		String listOfSeatsToInsert[] = new String[]{"A0S1","A1S1","A3S3"};//You will insert a new seat after AxSy
-		
+		int listOfPhilosToInsert[] = new int[]{20,15,3};
+		int listOfPhilosToDelete[] = new int[]{20,15,3};//You will insert a new philo after x
 		List<AgentInterface> agentList;
+		TableSecurity tableSec;
 		
 		agentList= new ArrayList<AgentInterface>();
 		
@@ -43,11 +45,42 @@ public class Master {
 		TimeUnit.MILLISECONDS.sleep(100);
 		insertSeats(agentList, listOfSeatsToInsert);
 		
+		/*TimeUnit.MILLISECONDS.sleep(100);
+		insertPhilos(agentList, listOfPhilosToInsert, tableSec);
+		
+		TimeUnit.MILLISECONDS.sleep(100);
+		removePhilos(agentList, listOfPhilosToDelete);*/
+		
+	
 		
 		/*for(AgentInterface agent1:agentList){
 			System.out.println("Agent:"+agent1.toString()+"has other agent" + agent1.getOtherAgents().get(0).toString());
 		}*/
 	}
+
+
+	
+
+
+	private static void removePhilos(List<AgentInterface> agentList, int[] listOfPhilosToDelete) {
+		// TODO Auto-generated method stub
+		
+	}
+
+/**
+	 * 
+	 * @param agentList a list of all agents that are currently up and running. 
+	 * @param listOfPhilosToInsert a list of all positions where philosophers are to be inserted. 
+	 */
+	private static void insertPhilos(List<AgentInterface> agentList, int[] listOfPhilosToInsert,TableSecurity tableSecurity) {
+		//shut down table security
+		//iterate through list 
+			//insert philos so that they are spread equally and start them aswell (give them a time when to wake up)
+		// wake up table security;
+		
+		
+	}
+
 
 
 	/**
@@ -69,8 +102,7 @@ public class Master {
 			agent.wakeUpPhilos();
 		}
 	}
-
-
+	
 	/**
 	 * This method calls the method deleteSeat() for the specific agent
 	 * @param agentList is the current list of all agents
@@ -276,10 +308,10 @@ public class Master {
 			throws NotBoundException, MalformedURLException, RemoteException {
 		for(int i = 0; i < numberOfAgents; i++){
 
-			//agentList.add((AgentInterface)Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));//CB changed to agent
+			agentList.add((AgentInterface)Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));//CB changed to agent
 			//agentList.add((AgentInterface)Naming.lookup("rmi://192.168.56.103:" + (startPort + i) + "/agent"));//CB changed to agent	
-			Registry remoteRegistry = LocateRegistry.getRegistry("192.168.56.101",startPort+i);
-			agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
+			//Registry remoteRegistry = LocateRegistry.getRegistry("192.168.56.101",startPort+i);
+			//agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
 		}
 	}
 	

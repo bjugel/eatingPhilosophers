@@ -29,6 +29,7 @@ public class Philosopher implements Runnable {
 	private boolean shutDown;
 	private boolean shutDownAknowledged;
 	private long endTime;
+	private boolean wantsToDie;
 
 	public Philosopher(int philoID, AgentInterface yourAgent) {
 		super();
@@ -43,6 +44,7 @@ public class Philosopher implements Runnable {
 		this.shutDown=false;
 		this.shutDownAknowledged=false;
 		endTime=-1;
+		this.wantsToDie=false;
 	}
 
 	
@@ -50,7 +52,7 @@ public class Philosopher implements Runnable {
 	public void run() {
 		try {
 			//System.out.printf("Iam Philosopher%03d with Agent Agent%03d\n", this.philoID, agent.getAgentID());
-			while(System.currentTimeMillis()<endTime) {
+			while(System.currentTimeMillis()<endTime && !this.wantsToDie) {
 				
 				if(isCatched){
 					getPunishment();
@@ -67,7 +69,7 @@ public class Philosopher implements Runnable {
 					}
 				}while(!hasEaten);
 				
-				
+			
 				if(!isHungry)
 				{
 					meditate();
@@ -195,6 +197,12 @@ public class Philosopher implements Runnable {
 
 	public void setEndTime(long endTime) {
 		this.endTime=endTime;
+		
+	}
+
+
+	public void goDie() {
+		this.wantsToDie=true;
 		
 	}
 

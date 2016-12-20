@@ -53,4 +53,5 @@ public interface AgentInterface extends Remote {
 	public void addPhilos(int philos, int firstPhiloID)  throws RemoteException;
 	public int getHighestPhiloId()throws RemoteException;
 	public void addAndStartPhilos(int philos, int firstPhiloID,long endTime)throws RemoteException;
+	public boolean deletePhiloByID(int philoID) throws RemoteException;
 }

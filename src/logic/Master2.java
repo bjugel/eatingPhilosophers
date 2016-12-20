@@ -21,33 +21,10 @@ public class Master2 {
 	int startPort = 1099;
 	int tolerance = 20;
 	int secondsToWait = 10;
-	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" }; // Ax
-																													// =
-																													// id
-																													// of
-																													// agent
-																													// ||
-																													// Sy
-																													// =
-																													// index
-																													// of
-																													// seat
-																													// !!!Make
-																													// sure
-																													// that
-																													// you
-																													// are
-																													// initialize
-																													// this
-																													// seats
-	String listOfSeatsToInsert[] = new String[] { "A0S1", "A1S1", "A3S3" };// You
-																			// will
-																			// insert
-																			// a
-																			// new
-																			// seat
-																			// after
-																			// AxSy
+	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" }; 
+	// you will insert a new seat after AxSy
+	String listOfSeatsToInsert[] = new String[] { "A0S1", "A1S1", "A3S3" };
+																			
 	int numberOfPhilosToInsert = 4;
 	int listOfPhilosToDelete[] = new int[] { 20, 15, 3 };
 	List<AgentInterface> agentList;
@@ -79,10 +56,10 @@ public class Master2 {
 		master.insertPhilos(master.agentList, master.numberOfPhilosToInsert, master.tableSec, master.endTime);
 		master.insertPhilos(master.agentList, master.numberOfPhilosToInsert, master.tableSec, master.endTime);
 
-		/*
-		 * TimeUnit.MILLISECONDS.sleep(100); removePhilos(agentList,
-		 * listOfPhilosToDelete);
-		 */
+		
+		 TimeUnit.MILLISECONDS.sleep(100); 
+		 master.removePhilos(master.agentList,master.listOfPhilosToDelete, master.tableSec);
+		
 
 		/*
 		 * for(AgentInterface agent1:agentList){
@@ -97,21 +74,29 @@ public class Master2 {
 	}
 
 	public void removePhilos(List<AgentInterface> agentList, int[] listOfPhilosToDelete, TableSecurity tableSecurity)
-			throws InterruptedException {
+			throws InterruptedException, RemoteException {
 		synchronized (tableSecurity) {
-
+			
 			tableSecurity.shutDown();
+			
 			tableSecurity.wait();
 		}
 
 		System.out.println("TODO TRHOW PHILOS BUT THIS WOULD BE DONE HERE");
-		// iterate through list
-		// insert philos so that they are spread equally and start them aswell
-		// (give them a time when to wake up)
-		// wake up table security;
+		for(int philoID: listOfPhilosToDelete){
+			for(AgentInterface a: agentList){
+				if(a.deletePhiloByID(philoID)){
+					System.out.println("Deleted Philosopher with ID:" + philoID);
+					break;
+				}
+			}
+		}
+		
 		synchronized (tableSecurity) {
 			tableSecurity.notify();
-
+			tableSecurity.wait(); // totally retardet stuff waiting for the
+									// other one to wake us up again since we
+									// dont understand shit
 		}
 
 	}
@@ -127,9 +112,9 @@ public class Master2 {
 	 */
 	public void insertPhilos(List<AgentInterface> agentList, int numberOfPhilosToInsert, TableSecurity tableSecurity,
 			long endTime) throws InterruptedException, RemoteException {
-		System.out.println("bla");
+		
 		synchronized (tableSecurity) {
-			TimeUnit.MILLISECONDS.sleep(500);
+			
 			tableSecurity.shutDown();
 			System.out.println("waiting for SECUR");
 			tableSecurity.wait();
@@ -181,7 +166,7 @@ public class Master2 {
 		}
 
 	}
-
+	
 	/**
 	 * This method calls the method insertSeat() for the specific agent
 	 * 

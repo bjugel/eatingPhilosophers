@@ -369,7 +369,9 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 		philoList.get(philoIndex).setPhiloHungry();
 	}
 
-	// CB
+	/**
+	 * returns the current size of the philosopherlist 
+	 */
 	public int getNumberOfPhilos() {
 		return philoList.size();
 	}
@@ -599,6 +601,28 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 			}
 		}
 
+	}
+	/**
+	 * tries to delete a philo if it is in this master. If not then returns false
+	 * @param philoID the id of the philo to delete
+	 * @return if the philo could be deleted
+	 */
+	public boolean deletePhiloByID(int philoID){
+		boolean deleted=false; 
+		int philoListPos=-1;
+		for(Philosopher p:philoList){
+			if(philoID==p.getPhiloID()){
+				p.goDie();
+				philoListPos=philoList.indexOf(p);
+				break;
+			}
+		}
+		if (philoListPos>=0){
+			
+			philoList.remove(philoListPos);
+			deleted=true;
+		}
+		return deleted;
 	}
 
 	// CB

@@ -51,10 +51,12 @@ public class TableSecurity implements Runnable {
 
 			// The table security collects all eatingCounter from the philos to
 			// calculate the average times of eating.
+			numberOfPhilos=0;
 			for (AgentInterface agent : agentList) {
 
 				try {
 					totalTimesOfEating += agent.getTotalTimesOfEating();
+					numberOfPhilos+=agent.getNumberOfPhilos();
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -124,16 +126,12 @@ public class TableSecurity implements Runnable {
 				break;
 			}
 			synchronized (this) {
-				System.out.println("Shutdown: " + shutDown);
+				
 				if (this.shutDown) {
 					try {
-						System.out.println("SECURITY REACTED TO SHUTDOWNBOOLEAN");
 						this.notify();//wakeup master to do his stuf and aknowledged we heard him.
 						this.wait();// now wait for master to back notify us
-						System.out.println("");
-						System.out.println("TABLESEC will set the shutdown boolean to false The boolean is " + this.shutDown);
 						this.shutDown = false;
-						System.out.println("TABLESEC  set the shutdown boolean to false The boolean is " + this.shutDown);
 						this.notify();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block

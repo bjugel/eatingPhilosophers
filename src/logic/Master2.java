@@ -15,19 +15,21 @@ import java.rmi.registry.Registry;
 
 public class Master2 {
 
-	int numberOfPhilo = 40;
-	int numberOfSeats = 20;
-	int numberOfAgents = 4;
+	int numberOfPhilo = 50;
+	int numberOfSeats = 30;
+	int numberOfAgents = 10;
 	int startPort = 1099;
 	int tolerance = 20;
-	int secondsToWait = 10;
-	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" }; 
+	int secondsToWait = 15;
+	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" };
 	// you will insert a new seat after AxSy
 	String listOfSeatsToInsert[] = new String[] { "A0S1", "A1S1", "A3S3" };
-																			
+	String ipList[] = new String[] { "127.0.0.1" };
 	int numberOfPhilosToInsert = 4;
 	int listOfPhilosToDelete[] = new int[] { 20, 15, 3 };
 	List<AgentInterface> agentList;
+	List<AgentFactoryInterface> agentFactoryList;
+
 	TableSecurity tableSec;
 	long endTime;
 
@@ -37,7 +39,7 @@ public class Master2 {
 		// You will insert a new philo after x
 
 		master.agentList = new ArrayList<AgentInterface>();
-
+		master.agentFactoryList = new ArrayList <AgentFactoryInterface>();
 		master.initializeEnvironment(master.numberOfPhilo, master.numberOfSeats, master.numberOfAgents,
 				master.startPort, master.agentList, master.tolerance, master.secondsToWait);
 
@@ -56,10 +58,8 @@ public class Master2 {
 		master.insertPhilos(master.agentList, master.numberOfPhilosToInsert, master.tableSec, master.endTime);
 		master.insertPhilos(master.agentList, master.numberOfPhilosToInsert, master.tableSec, master.endTime);
 
-		
-		 TimeUnit.MILLISECONDS.sleep(100); 
-		 master.removePhilos(master.agentList,master.listOfPhilosToDelete, master.tableSec);
-		
+		TimeUnit.MILLISECONDS.sleep(100);
+		master.removePhilos(master.agentList, master.listOfPhilosToDelete, master.tableSec);
 
 		/*
 		 * for(AgentInterface agent1:agentList){
@@ -76,22 +76,22 @@ public class Master2 {
 	public void removePhilos(List<AgentInterface> agentList, int[] listOfPhilosToDelete, TableSecurity tableSecurity)
 			throws InterruptedException, RemoteException {
 		synchronized (tableSecurity) {
-			
+
 			tableSecurity.shutDown();
-			
+
 			tableSecurity.wait();
 		}
 
 		System.out.println("TODO TRHOW PHILOS BUT THIS WOULD BE DONE HERE");
-		for(int philoID: listOfPhilosToDelete){
-			for(AgentInterface a: agentList){
-				if(a.deletePhiloByID(philoID)){
+		for (int philoID : listOfPhilosToDelete) {
+			for (AgentInterface a : agentList) {
+				if (a.deletePhiloByID(philoID)) {
 					System.out.println("Deleted Philosopher with ID:" + philoID);
 					break;
 				}
 			}
 		}
-		
+
 		synchronized (tableSecurity) {
 			tableSecurity.notify();
 			tableSecurity.wait(); // totally retardet stuff waiting for the
@@ -112,9 +112,9 @@ public class Master2 {
 	 */
 	public void insertPhilos(List<AgentInterface> agentList, int numberOfPhilosToInsert, TableSecurity tableSecurity,
 			long endTime) throws InterruptedException, RemoteException {
-		
+
 		synchronized (tableSecurity) {
-			
+
 			tableSecurity.shutDown();
 			System.out.println("waiting for SECUR");
 			tableSecurity.wait();
@@ -166,7 +166,7 @@ public class Master2 {
 		}
 
 	}
-	
+
 	/**
 	 * This method calls the method insertSeat() for the specific agent
 	 * 
@@ -301,12 +301,9 @@ public class Master2 {
 	 * @throws RemoteException
 	 */
 	public void setPhiloHungry(List<AgentInterface> agentList) throws RemoteException {
-		agentList.get(2).setPhiloHungry(1);
-		agentList.get(0).setPhiloHungry(4);
-		// TODO change
-		/*
-		 * for(AgentInterface agent: agentList){ agent.setPhiloHungry(0); }
-		 */
+		
+		 for(AgentInterface agent: agentList){ agent.setPhiloHungry(0); }
+
 	}
 
 	/**
@@ -407,6 +404,21 @@ public class Master2 {
 		}
 	}
 
+	public void getAllWorkingAgentFactories() {
+		agentFactoryList.clear();
+		for (int i = 0; i < ipList.length; i++) {
+			Registry remoteRegistry;
+			try {
+				remoteRegistry = LocateRegistry.getRegistry(ipList[i], startPort);
+				agentFactoryList.add((AgentFactoryInterface) remoteRegistry.lookup("agentFactory"));
+			} catch (Exception e) {
+				System.out.println("couldnt find factory on ip:" + ipList[i]);
+				e.printStackTrace();
+			}
+		}
+
+	}
+
 	/**
 	 * This method is getting connected to all up agents at the beginning
 	 * 
@@ -422,12 +434,36 @@ public class Master2 {
 	 */
 	public void getAllAgents(int numberOfAgents, int startPort, List<AgentInterface> agentList)
 			throws NotBoundException, MalformedURLException, RemoteException {
-		for (int i = 0; i < numberOfAgents; i++) {
+		getAllWorkingAgentFactories();
+		AgentFactoryInterface currFactory;
+		int agentCounter=0; 
+		
+		for (int i = 0; i < agentFactoryList.size(); i++) {//TODONOWJUMP
+			currFactory = agentFactoryList.get(i);
+			if (i == 0) {
+				for(int j = 0; j<numberOfAgents/agentFactoryList.size()+numberOfAgents %agentFactoryList.size();j++){
+					agentList.add(currFactory.giveAgent(agentCounter));
+					agentCounter++;
+				}
+			} else {
+				for(int j = 0; j<numberOfAgents/agentFactoryList.size();j++){
+					agentList.add(currFactory.giveAgent(agentCounter));
+					agentCounter++;
+				}
+			} 
+		}
+		System.out.println("Created "+agentCounter+" new Agents.");
+		
+//			Registry remoteRegistry = LocateRegistry.getRegistry(ipList[i], startPort);
+//			agentFactoryList.add((AgentFactoryInterface) remoteRegistry.lookup("agentFactory"));// CB
 
-			agentList.add((AgentInterface) Naming.lookup("rmi://127.0.0.1:" + (startPort + i) + "/agent"));// CB
-																											// changed
-																											// to
-																											// agent
+			// agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
+			// agentFactoryList.add((AgentFactoryInterface)
+			// Naming.lookup("rmi://"+ ipList[i] +":" + (startPort) +
+			// "/agentFactory"));// CB
+			// changed 
+			// to
+			// agent
 			// agentList.add((AgentInterface)Naming.lookup("rmi://192.168.56.103:"
 			// + (startPort + i) + "/agent"));//CB changed to agent
 			// Registry remoteRegistry =
@@ -436,4 +472,4 @@ public class Master2 {
 		}
 	}
 
-}
+

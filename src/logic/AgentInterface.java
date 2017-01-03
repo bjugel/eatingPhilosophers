@@ -14,7 +14,6 @@ public interface AgentInterface extends Remote {
 	public void initForks(int numberOfSeats)throws RemoteException;
 	public void initSeats(int numberOfSeats, int firstSeatID)throws RemoteException;
 	public ArrayList<TableFork> getForks()throws RemoteException;
-	public ArrayList<Seat> getSeats()throws RemoteException;
 	public void startPhilosophers(long endTimes)throws RemoteException;
 	public void giveOtherAgent(AgentInterface agent) throws RemoteException;
 	public ArrayList<AgentInterface> getOtherAgents()throws RemoteException;
@@ -54,4 +53,6 @@ public interface AgentInterface extends Remote {
 	public int getHighestPhiloId()throws RemoteException;
 	public void addAndStartPhilos(int philos, int firstPhiloID,long endTime)throws RemoteException;
 	public boolean deletePhiloByID(int philoID) throws RemoteException;
+	public int getNumberOfSeats() throws RemoteException;
+	public void killAllPhilos() throws RemoteException;
 }

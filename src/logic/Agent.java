@@ -260,9 +260,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 		return forks;
 	}
 
-	public ArrayList<Seat> getSeats() {
-		return seatList;
-	}
+
 
 	public void giveOtherAgent(AgentInterface agent) {
 
@@ -624,6 +622,12 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 		}
 		return deleted;
 	}
+	
+	public void killAllPhilos(){
+		for(Philosopher p :philoList){
+			p.goDie();
+		}
+	}
 
 	// CB
 	private void lockAllNecessarySeatsForDeleteASeatForInsertASeat(int seatIndex) throws Exception {
@@ -694,6 +698,11 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 		}
 		return highestPhiloID;
 		
+	}
+
+	@Override
+	public int getNumberOfSeats() throws RemoteException {
+		return this.seatList.size();
 	}
 
 }

@@ -20,7 +20,7 @@ public class Master2 {
 	int numberOfAgents = 10;
 	int startPort = 1099;
 	int tolerance = 20;
-	int secondsToWait = 15;
+	int secondsToWait = 16;
 	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" };
 	// you will insert a new seat after AxSy
 	String listOfSeatsToInsert[] = new String[] { "A0S1", "A1S1", "A3S3" };
@@ -32,9 +32,10 @@ public class Master2 {
 
 	TableSecurity tableSec;
 	long endTime;
+	long startTime;
 
 	public static void main(String[] args) throws Exception {
-
+		System.setProperty("sun.rmi.transport.tcp.responseTimeout", "5000"); //LOOK this is a problem here
 		Master2 master = new Master2();
 		// You will insert a new philo after x
 
@@ -220,7 +221,7 @@ public class Master2 {
 	 *            is the current list of all agents
 	 * @throws Exception
 	 */
-	public void giveEachAgentTheOtherAgentsAndNext(List<AgentInterface> agentList) throws Exception {
+	public void giveEachAgentTheOtherAgentsAndNext() throws Exception {
 		for (AgentInterface agent1 : agentList) {
 			agent1.clearOtherAgentList();
 			// killer line giving each agent its privious and next counterpart
@@ -267,29 +268,35 @@ public class Master2 {
 	public void initializeEnvironment(int numberOfPhilo, int numberOfSeats, int numberOfAgents, int startPort,
 			List<AgentInterface> agentList, int tolerance, int secondsToWait) {
 
-		long startTime;
+		
 		try {
-			getAllAgents(numberOfAgents, startPort, agentList);
+			getAllAgents();
 
-			giveEachAgentTheOtherAgentsAndNext(agentList);
+			giveEachAgentTheOtherAgentsAndNext();
 
-			initializeForksForAllAgents(numberOfSeats, numberOfAgents, agentList);
-			initializeSeatsForAllAgents(numberOfSeats, numberOfAgents, agentList);
+			initializeForksForAllAgents();
+			initializeSeatsForAllAgents();
 
-			initializePhilosophesForAllAgents(numberOfPhilo, numberOfAgents, agentList);
+			initializePhilosophesForAllAgents();
 
 			setPhiloHungry(agentList);// CB
 
 			System.out.println("Philos will run now.");
 			startTime = System.currentTimeMillis();
 			getTableSecurityUpAndRunning(numberOfPhilo, agentList, tolerance, startTime);// CB
-
 			this.endTime = startTime + 1000 * secondsToWait;
+			getCrashSecurityUpAndRunning();
 			getPhilosophersUpAndMeditating(agentList, endTime);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private void getCrashSecurityUpAndRunning() {
+		CrashSecurity crashSecurity = new CrashSecurity(agentList, endTime,this);
+		new Thread(crashSecurity).start();
+		
 	}
 
 	/**
@@ -335,7 +342,7 @@ public class Master2 {
 	 *            is the list of all agents at the beginning
 	 * @throws RemoteException
 	 */
-	public void initializeSeatsForAllAgents(int numberOfSeats, int numberOfAgents, List<AgentInterface> agentList)
+	public void initializeSeatsForAllAgents()
 			throws RemoteException {
 		AgentInterface currAgent;
 		for (int i = 0; i < numberOfAgents; i++) {
@@ -363,7 +370,7 @@ public class Master2 {
 	 *            is the list of all agents at the beginning
 	 * @throws RemoteException
 	 */
-	public void initializeForksForAllAgents(int numberOfSeats, int numberOfAgents, List<AgentInterface> agentList)
+	public void initializeForksForAllAgents()
 			throws RemoteException {
 
 		AgentInterface currAgent;
@@ -389,7 +396,7 @@ public class Master2 {
 	 *            is the list of all agents at the beginning
 	 * @throws RemoteException
 	 */
-	public void initializePhilosophesForAllAgents(int numberOfPhilo, int numberOfAgents, List<AgentInterface> agentList)
+	public void initializePhilosophesForAllAgents()
 			throws RemoteException {
 		AgentInterface currAgent;
 		for (int i = 0; i < numberOfAgents; i++) {
@@ -432,7 +439,7 @@ public class Master2 {
 	 * @throws MalformedURLException
 	 * @throws RemoteException
 	 */
-	public void getAllAgents(int numberOfAgents, int startPort, List<AgentInterface> agentList)
+	public void getAllAgents()
 			throws NotBoundException, MalformedURLException, RemoteException {
 		getAllWorkingAgentFactories();
 		AgentFactoryInterface currFactory;
@@ -470,6 +477,37 @@ public class Master2 {
 			// LocateRegistry.getRegistry("192.168.56.101",startPort+i);
 			// agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
 		}
+
+	public void reinitializeEnvironment(int numberOfSeatsBackUp, List<Integer> philosEatingCountersBackUp) throws MalformedURLException, RemoteException, NotBoundException {
+		try {
+			this.numberOfSeats=numberOfSeatsBackUp;
+			this.numberOfPhilo=philosEatingCountersBackUp.size();
+			
+			getAllAgents();
+			giveEachAgentTheOtherAgentsAndNext();
+			initializeForksForAllAgents();
+			initializeSeatsForAllAgents();
+
+			reinitializePhilosophesForAllAgents(philosEatingCountersBackUp);
+
+			setPhiloHungry(agentList);// CB
+
+			System.out.println("Philos will run now.");
+			getTableSecurityUpAndRunning(numberOfPhilo, agentList, tolerance, startTime);// CB
+			getCrashSecurityUpAndRunning();
+			getPhilosophersUpAndMeditating(agentList, endTime);
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		
+	}
+
+	private void reinitializePhilosophesForAllAgents(List<Integer> philosEatingCountersBackUp) {
+		// TODONEXT Auto-generated method stub
+		
+	}
 	}
 
 

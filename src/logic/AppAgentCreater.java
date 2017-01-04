@@ -10,6 +10,7 @@ public class AppAgentCreater {
 	static int numberOfAgents =4;
 
 	public static void main(String[] args) throws RemoteException {
+		System.setProperty("java.rmi.server.hostname", "127.0.0.1");
 		Registry registryOne = LocateRegistry.createRegistry(startPort);
 		registryOne.rebind("agentFactory",new AgentFactory());
 		System.out.println("AgentFactory up and running.");

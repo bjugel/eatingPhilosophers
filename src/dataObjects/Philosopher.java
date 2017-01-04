@@ -46,6 +46,22 @@ public class Philosopher implements Runnable {
 		endTime=-1;
 		this.wantsToDie=false;
 	}
+	
+	public Philosopher(int philoID,int eatingCounter, AgentInterface yourAgent) {
+		super();
+		this.philoID = philoID;
+		this.seatID = -1;
+		this.eatingCounter= eatingCounter;
+		this.state = STATE.LOOKING_FOR_SEAT;// new STATE((int)Math.random() % 4);
+		this.agent = yourAgent;
+		this.isCatched = false;//CB
+		this.isFinish = false;//CB
+		this.isHungry = false;//CB
+		this.shutDown=false;
+		this.shutDownAknowledged=false;
+		endTime=-1;
+		this.wantsToDie=false;
+	}
 
 	
 	@Override

@@ -10,11 +10,14 @@ public class CrashSecurity implements Runnable {
 
 	private List<Integer> philosEatingCounters;
 	private List<Integer> philosEatingCountersBackUp;
+	private List<Integer> philoIDs;
+	private List<Integer> philoIDsBackUp;
 	private List<AgentInterface> agentList;
 	private Master2 master;
 	private int numberOfSeats;
 	private int numberOfSeatsBackUp;
 	private long endTime;
+	boolean useless;
 
 	public CrashSecurity(List<AgentInterface> agentList, long endTime, Master2 master) {
 		this.master = master;
@@ -23,20 +26,31 @@ public class CrashSecurity implements Runnable {
 		this.numberOfSeats = 0;
 		this.philosEatingCounters = new ArrayList<Integer>();
 		this.philosEatingCountersBackUp = new ArrayList<Integer>();
+		this.philoIDs = new ArrayList<Integer>();
+		this.philoIDsBackUp = new ArrayList<Integer>();
+		this.useless=false;
 	}
 
 	@Override
 	public void run() {
 		System.out.println("CrashSecurity is running now");
-		while (System.currentTimeMillis() <= endTime) {
+		while (System.currentTimeMillis() <= endTime && !this.useless) {
 
 			// backup all data and clear the current data structures to fill
 			// them with new data
 			philosEatingCountersBackUp.clear();
+			
 			for (int eatingCounter : philosEatingCounters) {
 				philosEatingCountersBackUp.add(eatingCounter);
 			}
+			philoIDsBackUp.clear();
+			for (int philoID : philoIDs) {
+				philoIDsBackUp.add(philoID);
+			}
+			
 			philosEatingCounters.clear();
+			philoIDs.clear();
+			
 			numberOfSeatsBackUp = numberOfSeats;
 			numberOfSeats = 0;
 
@@ -45,11 +59,16 @@ public class CrashSecurity implements Runnable {
 					numberOfSeats += agent.getNumberOfSeats();
 					for (int i = 0; i < agent.getNumberOfPhilos(); i++) {
 						philosEatingCounters.add(agent.getPhiloEatingCounter(i));
+						philoIDs.add(agent.getPhiloID(i));
 					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
 					System.out.println("System Crashed now reinitializing it with:");
 					System.out.println("Philos:");
+					for (int philoID : philoIDsBackUp) {
+						System.out.print(philoID + " ");
+					}
+					System.out.println();
 					for (int eatingCounter : philosEatingCountersBackUp) {
 						System.out.print(eatingCounter + " ");
 					}
@@ -57,13 +76,13 @@ public class CrashSecurity implements Runnable {
 					try {
 						handleCrash();
 					} catch (MalformedURLException e1) {
-						// TODO Auto-generated catch block
+						
 						e1.printStackTrace();
 					} catch (RemoteException e1) {
-						// TODO Auto-generated catch block
+						
 						e1.printStackTrace();
 					} catch (NotBoundException e1) {
-						// TODO Auto-generated catch block
+						
 						e1.printStackTrace();
 					}
 
@@ -76,9 +95,12 @@ public class CrashSecurity implements Runnable {
 	private void handleCrash() throws MalformedURLException, RemoteException, NotBoundException {
 
 		killPhilos();
-		master.reinitializeEnvironment(this.numberOfSeatsBackUp,this.philosEatingCountersBackUp);
-		
-
+		master.killTableSecurity();
+		//kill table security
+		master.reinitializeEnvironment(this.numberOfSeatsBackUp,this.philoIDsBackUp,this.philosEatingCountersBackUp);
+		//last statement set useless to true so this instance of chrash security ends itself. 
+		this.useless=true;
+		//set boolean so that crash security ends itselfe.
 	}
 
 	/**

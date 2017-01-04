@@ -23,6 +23,7 @@ public class TableSecurity implements Runnable {
 	private int tolerance;
 	long startTime;
 	private boolean shutDown;
+	private boolean useless;
 
 	public TableSecurity(int numberOfPhilos, List<AgentInterface> agentList, int tolerance, long startTime) {
 		this.totalTimesOfEating = 0;
@@ -38,6 +39,7 @@ public class TableSecurity implements Runnable {
 		this.tolerance = tolerance;
 		this.startTime = startTime;
 		this.shutDown = false;
+		this.useless = false;
 	}
 
 	@Override
@@ -47,7 +49,7 @@ public class TableSecurity implements Runnable {
 				+ "Everyone get catched, who eats " + (tolerance + 1) + " times more than the average philosopher.\n\n"
 				+ "Legend:\n" + "! = philosopher got catched \n" + "# = philosopher is already catched \n"
 				+ "+ = philosopher is done \n\n");
-		while (true) {
+		while (true && !(this.useless)) {
 
 			// The table security collects all eatingCounter from the philos to
 			// calculate the average times of eating.
@@ -148,6 +150,11 @@ public class TableSecurity implements Runnable {
 		System.out.println("Master will set the shutdown boolean The boolean is " + this.shutDown);
 		this.shutDown = true;
 		System.out.println("Master set the shutdown boolean to true. The boolean is " + this.shutDown);
+	}
+
+	public void setUseless() {
+		this.useless = true;
+		
 	}
 
 }

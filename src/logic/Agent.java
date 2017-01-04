@@ -356,15 +356,24 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 	public int getPhiloEatingCounter(int philoIndex) throws RemoteException {
 		return philoList.get(philoIndex).getEatingCounter();
 	}
-
+	
+	public int getPhiloID(int philoIndex) throws RemoteException {
+		return philoList.get(philoIndex).getPhiloID();
+	}
+	
+	
 	// CB
 	public void catchPhilo(int philoIndex) throws RemoteException {
 		philoList.get(philoIndex).getCatched();
 	}
 
 	// CB
-	public void setPhiloHungry(int philoIndex) throws RemoteException {
-		philoList.get(philoIndex).setPhiloHungry();
+	public void setPhiloHungry(int philoID) throws RemoteException {
+		for(Philosopher philo: philoList){
+			if(philoID == philo.getPhiloID()){
+				philo.setPhiloHungry();
+			}
+		}
 	}
 
 	/**
@@ -704,5 +713,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 	public int getNumberOfSeats() throws RemoteException {
 		return this.seatList.size();
 	}
-
+	public void addPhilo( int philoID, int eatingCounter) {
+		philoList.add(new Philosopher(philoID, eatingCounter, this));
+	}
 }

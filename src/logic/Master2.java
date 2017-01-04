@@ -17,16 +17,17 @@ public class Master2 {
 
 	int numberOfPhilo = 50;
 	int numberOfSeats = 30;
-	int numberOfAgents = 10;
+	int numberOfAgents = 5;
 	int startPort = 1099;
 	int tolerance = 20;
-	int secondsToWait = 16;
+	int secondsToWait = 30;
 	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" };
 	// you will insert a new seat after AxSy
 	String listOfSeatsToInsert[] = new String[] { "A0S1", "A1S1", "A3S3" };
 	String ipList[] = new String[] { "127.0.0.1" };
 	int numberOfPhilosToInsert = 4;
 	int listOfPhilosToDelete[] = new int[] { 20, 15, 3 };
+	int listOfPhilosToSetHungry[] = new int[] { 2, 10, 4 };
 	List<AgentInterface> agentList;
 	List<AgentFactoryInterface> agentFactoryList;
 
@@ -35,12 +36,17 @@ public class Master2 {
 	long startTime;
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty("sun.rmi.transport.tcp.responseTimeout", "5000"); //LOOK this is a problem here
+		System.setProperty("sun.rmi.transport.tcp.responseTimeout", "200000"); // LOOK
+																				// this
+																				// is
+																				// a
+																				// problem
+																				// here
 		Master2 master = new Master2();
 		// You will insert a new philo after x
 
 		master.agentList = new ArrayList<AgentInterface>();
-		master.agentFactoryList = new ArrayList <AgentFactoryInterface>();
+		master.agentFactoryList = new ArrayList<AgentFactoryInterface>();
 		master.initializeEnvironment(master.numberOfPhilo, master.numberOfSeats, master.numberOfAgents,
 				master.startPort, master.agentList, master.tolerance, master.secondsToWait);
 
@@ -268,7 +274,6 @@ public class Master2 {
 	public void initializeEnvironment(int numberOfPhilo, int numberOfSeats, int numberOfAgents, int startPort,
 			List<AgentInterface> agentList, int tolerance, int secondsToWait) {
 
-		
 		try {
 			getAllAgents();
 
@@ -294,9 +299,9 @@ public class Master2 {
 	}
 
 	private void getCrashSecurityUpAndRunning() {
-		CrashSecurity crashSecurity = new CrashSecurity(agentList, endTime,this);
+		CrashSecurity crashSecurity = new CrashSecurity(agentList, endTime, this);
 		new Thread(crashSecurity).start();
-		
+
 	}
 
 	/**
@@ -308,8 +313,12 @@ public class Master2 {
 	 * @throws RemoteException
 	 */
 	public void setPhiloHungry(List<AgentInterface> agentList) throws RemoteException {
-		
-		 for(AgentInterface agent: agentList){ agent.setPhiloHungry(0); }
+
+		for (Integer philoID : listOfPhilosToSetHungry) {
+			for (AgentInterface agent : agentList) {
+				agent.setPhiloHungry(philoID);
+			}
+		}
 
 	}
 
@@ -342,8 +351,7 @@ public class Master2 {
 	 *            is the list of all agents at the beginning
 	 * @throws RemoteException
 	 */
-	public void initializeSeatsForAllAgents()
-			throws RemoteException {
+	public void initializeSeatsForAllAgents() throws RemoteException {
 		AgentInterface currAgent;
 		for (int i = 0; i < numberOfAgents; i++) {
 			currAgent = agentList.get(i);
@@ -370,8 +378,7 @@ public class Master2 {
 	 *            is the list of all agents at the beginning
 	 * @throws RemoteException
 	 */
-	public void initializeForksForAllAgents()
-			throws RemoteException {
+	public void initializeForksForAllAgents() throws RemoteException {
 
 		AgentInterface currAgent;
 		for (int i = 0; i < numberOfAgents; i++) {
@@ -396,8 +403,7 @@ public class Master2 {
 	 *            is the list of all agents at the beginning
 	 * @throws RemoteException
 	 */
-	public void initializePhilosophesForAllAgents()
-			throws RemoteException {
+	public void initializePhilosophesForAllAgents() throws RemoteException {
 		AgentInterface currAgent;
 		for (int i = 0; i < numberOfAgents; i++) {
 			currAgent = agentList.get(i);
@@ -439,57 +445,61 @@ public class Master2 {
 	 * @throws MalformedURLException
 	 * @throws RemoteException
 	 */
-	public void getAllAgents()
-			throws NotBoundException, MalformedURLException, RemoteException {
+	public void getAllAgents() throws NotBoundException, MalformedURLException, RemoteException {
+		agentList.clear();
 		getAllWorkingAgentFactories();
 		AgentFactoryInterface currFactory;
-		int agentCounter=0; 
-		
-		for (int i = 0; i < agentFactoryList.size(); i++) {//TODONOWJUMP
+		int agentCounter = 0;
+
+		for (int i = 0; i < agentFactoryList.size(); i++) {
 			currFactory = agentFactoryList.get(i);
 			if (i == 0) {
-				for(int j = 0; j<numberOfAgents/agentFactoryList.size()+numberOfAgents %agentFactoryList.size();j++){
+				for (int j = 0; j < numberOfAgents / agentFactoryList.size()
+						+ numberOfAgents % agentFactoryList.size(); j++) {
 					agentList.add(currFactory.giveAgent(agentCounter));
 					agentCounter++;
 				}
 			} else {
-				for(int j = 0; j<numberOfAgents/agentFactoryList.size();j++){
+				for (int j = 0; j < numberOfAgents / agentFactoryList.size(); j++) {
 					agentList.add(currFactory.giveAgent(agentCounter));
 					agentCounter++;
 				}
-			} 
+			}
 		}
-		System.out.println("Created "+agentCounter+" new Agents.");
-		
-//			Registry remoteRegistry = LocateRegistry.getRegistry(ipList[i], startPort);
-//			agentFactoryList.add((AgentFactoryInterface) remoteRegistry.lookup("agentFactory"));// CB
+		System.out.println("Created " + agentCounter + " new Agents.");
 
-			// agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
-			// agentFactoryList.add((AgentFactoryInterface)
-			// Naming.lookup("rmi://"+ ipList[i] +":" + (startPort) +
-			// "/agentFactory"));// CB
-			// changed 
-			// to
-			// agent
-			// agentList.add((AgentInterface)Naming.lookup("rmi://192.168.56.103:"
-			// + (startPort + i) + "/agent"));//CB changed to agent
-			// Registry remoteRegistry =
-			// LocateRegistry.getRegistry("192.168.56.101",startPort+i);
-			// agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
-		}
+		// Registry remoteRegistry = LocateRegistry.getRegistry(ipList[i],
+		// startPort);
+		// agentFactoryList.add((AgentFactoryInterface)
+		// remoteRegistry.lookup("agentFactory"));// CB
 
-	public void reinitializeEnvironment(int numberOfSeatsBackUp, List<Integer> philosEatingCountersBackUp) throws MalformedURLException, RemoteException, NotBoundException {
+		// agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
+		// agentFactoryList.add((AgentFactoryInterface)
+		// Naming.lookup("rmi://"+ ipList[i] +":" + (startPort) +
+		// "/agentFactory"));// CB
+		// changed
+		// to
+		// agent
+		// agentList.add((AgentInterface)Naming.lookup("rmi://192.168.56.103:"
+		// + (startPort + i) + "/agent"));//CB changed to agent
+		// Registry remoteRegistry =
+		// LocateRegistry.getRegistry("192.168.56.101",startPort+i);
+		// agentList.add((AgentInterface)remoteRegistry.lookup("agent"));
+	}
+
+	public void reinitializeEnvironment(int numberOfSeatsBackUp, List<Integer> philoIDsBackUp,
+			List<Integer> philosEatingCountersBackUp) throws MalformedURLException, RemoteException, NotBoundException {
 		try {
-			this.numberOfSeats=numberOfSeatsBackUp;
-			this.numberOfPhilo=philosEatingCountersBackUp.size();
-			
+			this.numberOfSeats = numberOfSeatsBackUp;
+			this.numberOfPhilo = philosEatingCountersBackUp.size();
+
 			getAllAgents();
 			giveEachAgentTheOtherAgentsAndNext();
 			initializeForksForAllAgents();
 			initializeSeatsForAllAgents();
 
-			reinitializePhilosophesForAllAgents(philosEatingCountersBackUp);
-
+			reinitializePhilosophesForAllAgents(philoIDsBackUp, philosEatingCountersBackUp);
+			// continue changing from here //TODONOWNOW
 			setPhiloHungry(agentList);// CB
 
 			System.out.println("Philos will run now.");
@@ -500,14 +510,66 @@ public class Master2 {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
-		
+
 	}
 
-	private void reinitializePhilosophesForAllAgents(List<Integer> philosEatingCountersBackUp) {
-		// TODONEXT Auto-generated method stub
-		
-	}
+	private void reinitializePhilosophesForAllAgents(List<Integer> philoIDsBackUp,
+			List<Integer> philosEatingCountersBackUp) throws RemoteException {
+		this.numberOfPhilo = philosEatingCountersBackUp.size();
+
+		AgentInterface currAgent;
+		int nextPhiloIndex = 0;
+		int philosToAddToCurrAgent;
+		for (int i = 0; i < numberOfAgents; i++) {
+			currAgent = agentList.get(i);
+			if (i == 0) {
+				philosToAddToCurrAgent = (numberOfPhilo / numberOfAgents + numberOfPhilo % numberOfAgents);
+				nextPhiloIndex = addPredefinedPhilos(nextPhiloIndex, philosToAddToCurrAgent, philoIDsBackUp,
+						philosEatingCountersBackUp, currAgent);
+			} else {
+				philosToAddToCurrAgent = (numberOfPhilo / numberOfAgents);
+				nextPhiloIndex = addPredefinedPhilos(nextPhiloIndex, philosToAddToCurrAgent, philoIDsBackUp,
+						philosEatingCountersBackUp, currAgent);
+			}
+
+		}
+
 	}
 
+	/**
+	 * 
+	 * @param firstPhiloIndex
+	 *            the index of the next philo in the list that we want to add
+	 * @param numberOfPhilosToAdd
+	 *            how many philos we want to add to the given agent
+	 * @param philoIDsBackUp
+	 *            the list of philoIDs from which we read which ids to give the
+	 *            newly initialized philos
+	 * @param philosEatingCountersBackUp
+	 *            the list of eatingCounters from which we read which ids to
+	 *            give the newly initialized philos
+	 * @param agent
+	 *            the agent we want to add the philos to
+	 * @return the index of the next philo in the list that has not been
+	 *         reinitialized and assigned to an Agent yet
+	 * @throws RemoteException
+	 */
+	private int addPredefinedPhilos(int firstPhiloIndex, int numberOfPhilosToAdd, List<Integer> philoIDsBackUp,
+			List<Integer> philosEatingCountersBackUp, AgentInterface agent) throws RemoteException {
+		// since we add 1 in the returnvalue
+		int currPhilIndex = firstPhiloIndex - 1;
 
+		for (int i = 0; i < numberOfPhilosToAdd; i++) {
+			currPhilIndex = firstPhiloIndex + i;
+			agent.addPhilo(philoIDsBackUp.get(currPhilIndex), philosEatingCountersBackUp.get(currPhilIndex));
+		}
+		// the next phill index we want to add in the 0 position of the next
+		// agent.
+		return currPhilIndex + 1;
+	}
+
+	public void killTableSecurity() {
+		tableSec.setUseless();
+
+	}
+}

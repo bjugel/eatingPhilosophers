@@ -30,12 +30,14 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 
 	public Agent() throws RemoteException {
 		super();
+		philoList = new ArrayList<Philosopher>();
 	}
 
 	public Agent(int agentID) throws RemoteException {
 		super();
 		this.agentID = agentID;
 		this.philosDown = new AtomicBoolean(false);
+		philoList = new ArrayList<Philosopher>();
 
 	}
 
@@ -44,7 +46,6 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 	 * initiallize all the philosophers that should run.
 	 */
 	public void initialzePhilos(int numberOfPhilos, int firstPhiloID) {
-		philoList = new ArrayList<Philosopher>();
 		philoList.clear();
 		this.firstPhiloID = firstPhiloID;
 		addPhilos(numberOfPhilos, firstPhiloID);

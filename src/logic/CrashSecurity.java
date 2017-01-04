@@ -34,6 +34,7 @@ public class CrashSecurity implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("CrashSecurity is running now");
+		outerloop:
 		while (System.currentTimeMillis() <= endTime && !this.useless) {
 
 			// backup all data and clear the current data structures to fill
@@ -75,6 +76,7 @@ public class CrashSecurity implements Runnable {
 					System.out.println("\n number of Current Seats: " + numberOfSeatsBackUp);
 					try {
 						handleCrash();
+						break;
 					} catch (MalformedURLException e1) {
 						
 						e1.printStackTrace();
@@ -90,19 +92,22 @@ public class CrashSecurity implements Runnable {
 			}
 
 		}
+		System.out.println("Crash Security terminated.");
 	}
 
 	private void handleCrash() throws MalformedURLException, RemoteException, NotBoundException {
 
-		killPhilos();
 		master.killTableSecurity();
+		killPhilos();
 		//kill table security
 		master.reinitializeEnvironment(this.numberOfSeatsBackUp,this.philoIDsBackUp,this.philosEatingCountersBackUp);
 		//last statement set useless to true so this instance of chrash security ends itself. 
 		this.useless=true;
+		System.out.println("The useless boolean is now "+this.useless);
+		
+		
 		//set boolean so that crash security ends itselfe.
 	}
-
 	/**
 	 * kills all philos in the remaining agents so they dont run anymore.
 	 */

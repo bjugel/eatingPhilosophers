@@ -83,7 +83,7 @@ public class TableSecurity implements Runnable {
 							catchedMessage = catchedMessage + "!";
 							this.someoneGotCatched = true;
 							agent.catchPhilo(i);
-							System.out.println("Table Security catched Philo " + (agent.getFirstPhiloID() + i));
+							System.out.println("Table Security catched Philo " + (agent.getPhiloID(i)));
 						} else {
 							if (!philoIsDone) {
 								if (philoIsCatched) {
@@ -98,6 +98,7 @@ public class TableSecurity implements Runnable {
 					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
+					
 				}
 			}
 

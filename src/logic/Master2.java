@@ -20,11 +20,11 @@ public class Master2 {
 	int numberOfAgents = 5;
 	int startPort = 1099;
 	int tolerance = 20;
-	int secondsToWait = 30;
+	int secondsToWait = 60;
 	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" };
 	// you will insert a new seat after AxSy
 	String listOfSeatsToInsert[] = new String[] { "A0S1", "A1S1", "A3S3" };
-	String ipList[] = new String[] { "127.0.0.1" };
+	String ipList[] = new String[] { "192.168.56.103","192.168.56.101" };
 	int numberOfPhilosToInsert = 4;
 	int listOfPhilosToDelete[] = new int[] { 20, 15, 3 };
 	int listOfPhilosToSetHungry[] = new int[] { 2, 10, 4 };
@@ -36,7 +36,7 @@ public class Master2 {
 	long startTime;
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty("sun.rmi.transport.tcp.responseTimeout", "200000"); // LOOK
+		System.setProperty("sun.rmi.transport.tcp.responseTimeout", "5000"); // LOOK
 																				// this
 																				// is
 																				// a
@@ -516,20 +516,23 @@ public class Master2 {
 	private void reinitializePhilosophesForAllAgents(List<Integer> philoIDsBackUp,
 			List<Integer> philosEatingCountersBackUp) throws RemoteException {
 		this.numberOfPhilo = philosEatingCountersBackUp.size();
-
+		System.out.println("Test1");
 		AgentInterface currAgent;
 		int nextPhiloIndex = 0;
 		int philosToAddToCurrAgent;
 		for (int i = 0; i < numberOfAgents; i++) {
 			currAgent = agentList.get(i);
 			if (i == 0) {
+				System.out.println("Test2");
 				philosToAddToCurrAgent = (numberOfPhilo / numberOfAgents + numberOfPhilo % numberOfAgents);
 				nextPhiloIndex = addPredefinedPhilos(nextPhiloIndex, philosToAddToCurrAgent, philoIDsBackUp,
 						philosEatingCountersBackUp, currAgent);
+				System.out.println("in first agnet adding philos");
 			} else {
 				philosToAddToCurrAgent = (numberOfPhilo / numberOfAgents);
 				nextPhiloIndex = addPredefinedPhilos(nextPhiloIndex, philosToAddToCurrAgent, philoIDsBackUp,
 						philosEatingCountersBackUp, currAgent);
+				System.out.println("in "+ i +". agnet adding philos");
 			}
 
 		}

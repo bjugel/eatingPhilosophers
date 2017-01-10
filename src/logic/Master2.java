@@ -570,7 +570,7 @@ public class Master2 {
 		return currPhilIndex + 1;
 	}
 
-	public void killTableSecurity() {
+	public void killTableSecurity() throws RemoteException {
 		tableSec.setUseless();
 
 	}

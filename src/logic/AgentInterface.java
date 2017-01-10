@@ -63,4 +63,5 @@ public interface AgentInterface extends Remote {
 	public void giveHelperAverargeTimesOfEating(int average)throws RemoteException;
 	public void initialzeSecurityHelper( int tolerance)throws RemoteException;
 	public void startSecurityHelper() throws RemoteException;
+	public void killHelper() throws RemoteException;
 }

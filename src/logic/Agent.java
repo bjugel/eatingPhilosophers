@@ -756,4 +756,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 	public void addPhilo( int philoID, int eatingCounter) {
 		philoList.add(new Philosopher(philoID, eatingCounter, this));
 	}
+	public void killHelper() {
+		this.securityHelper.goDie();
+	}
 }

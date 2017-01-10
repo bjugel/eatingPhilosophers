@@ -27,14 +27,14 @@ public class SecurityHelper implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("security helper is up and running");
-		// TODO Auto-generated method stub
+		
 		while (!allPhilosAreDone && !finished) {
 			this.allPhilosAreDone=true;
-			System.out.println("in loop");
+			//System.out.println("in loop");
 			try {
 				// add up all philos eating counters
 				this.localTotalPhiloEatCount.getAndSet(agent.calculateTotalTimesOfEating());
-				System.out.println("this is the local eating time" + this.localTotalPhiloEatCount);
+				//System.out.println("this is the local eating time" + this.localTotalPhiloEatCount);
 				// punish all philosLocally
 				for (int i = 0; i < agent.getNumberOfPhilos(); i++) {
 					this.allPhilosAreDone=(allPhilosAreDone&&agent.isPhiloDone(i));
@@ -61,7 +61,7 @@ public class SecurityHelper implements Runnable {
 					this.shutDown=false;
 			
 			}}
-			System.out.println("philodone: "+allPhilosAreDone +" finished: " +finished);
+			//System.out.println("philodone: "+allPhilosAreDone +" finished: " +finished);
 		}
 		this.finished=true;
 	}
@@ -80,5 +80,10 @@ public class SecurityHelper implements Runnable {
 	}
 	public void setAverageEatenTimes(int avarage){
 		this.averageEatenTimes.getAndSet(avarage);
+	}
+
+	public void goDie() {
+		this.isFinished();
+		
 	}
 }

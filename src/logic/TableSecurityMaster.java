@@ -194,7 +194,10 @@ public class TableSecurityMaster implements Runnable {
 		System.out.println("Master set the shutdown boolean to true. The boolean is " + this.shutDown);
 	}
 
-	public void setUseless() {
+	public void setUseless() throws RemoteException {
+		for(AgentInterface agent: agentList){
+			agent.killHelper();
+		}
 		this.useless = true;
 		
 	}

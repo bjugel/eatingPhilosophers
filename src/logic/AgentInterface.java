@@ -25,7 +25,7 @@ public interface AgentInterface extends Remote {
 	public void giveForks(int seatID,int philoID) throws RemoteException;
 	public void releaseForks(int seatID,int philoID) throws RemoteException, Exception;
 	public void releaseFirstFork() throws RemoteException, Exception;
-	public int getTotalTimesOfEating()throws RemoteException;
+	public int calculateTotalTimesOfEating()throws RemoteException;
 	public int getPhiloEatingCounter(int philoIndex)throws RemoteException;
 	public void catchPhilo(int philoIndex)throws RemoteException;
 	public void setPhiloHungry(int philoID)throws RemoteException;
@@ -57,4 +57,10 @@ public interface AgentInterface extends Remote {
 	public void killAllPhilos() throws RemoteException;
 	public int getPhiloID(int philoPos) throws RemoteException;
 	public void addPhilo(int philoID,int eatingCounter) throws RemoteException;
+	public void wakeUpSecurityHelper() throws RemoteException;
+	public void shutDownSecurityHelper() throws RemoteException;
+	public int getTotalTimesOfEating() throws RemoteException;
+	public void giveHelperAverargeTimesOfEating(int average)throws RemoteException;
+	public void initialzeSecurityHelper( int tolerance)throws RemoteException;
+	public void startSecurityHelper() throws RemoteException;
 }

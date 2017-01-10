@@ -24,19 +24,19 @@ public class Master2 {
 	String listOfSeatsToDelete[] = new String[] { "A0S3", "A1S0", "A1S4", "A3S4", "A0S2", "A1S2", "A3S2", "A3S4" };
 	// you will insert a new seat after AxSy
 	String listOfSeatsToInsert[] = new String[] { "A0S1", "A1S1", "A3S3" };
-	String ipList[] = new String[] { "192.168.56.103","192.168.56.101" };
+	String ipList[] = new String[] { "127.0.0.1" };
 	int numberOfPhilosToInsert = 4;
 	int listOfPhilosToDelete[] = new int[] { 20, 15, 3 };
 	int listOfPhilosToSetHungry[] = new int[] { 2, 10, 4 };
 	List<AgentInterface> agentList;
 	List<AgentFactoryInterface> agentFactoryList;
 
-	TableSecurity tableSec;
+	TableSecurityMaster tableSec;
 	long endTime;
 	long startTime;
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty("sun.rmi.transport.tcp.responseTimeout", "5000"); // LOOK
+		System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000000"); // LOOK
 																				// this
 																				// is
 																				// a
@@ -80,7 +80,7 @@ public class Master2 {
 
 	}
 
-	public void removePhilos(List<AgentInterface> agentList, int[] listOfPhilosToDelete, TableSecurity tableSecurity)
+	public void removePhilos(List<AgentInterface> agentList, int[] listOfPhilosToDelete, TableSecurityMaster tableSecurity)
 			throws InterruptedException, RemoteException {
 		synchronized (tableSecurity) {
 
@@ -117,7 +117,7 @@ public class Master2 {
 	 * @throws InterruptedException
 	 * @throws RemoteException
 	 */
-	public void insertPhilos(List<AgentInterface> agentList, int numberOfPhilosToInsert, TableSecurity tableSecurity,
+	public void insertPhilos(List<AgentInterface> agentList, int numberOfPhilosToInsert, TableSecurityMaster tableSecurity,
 			long endTime) throws InterruptedException, RemoteException {
 
 		synchronized (tableSecurity) {
@@ -335,7 +335,7 @@ public class Master2 {
 	 */
 	public void getTableSecurityUpAndRunning(int numberOfPhilo, List<AgentInterface> agentList, int tolerance,
 			long startTime) {
-		tableSec = new TableSecurity(numberOfPhilo, agentList, tolerance, startTime);
+		tableSec = new TableSecurityMaster(numberOfPhilo, agentList, tolerance, startTime);
 		Thread security = new Thread(tableSec);
 		security.start();
 	}
@@ -499,7 +499,6 @@ public class Master2 {
 			initializeSeatsForAllAgents();
 
 			reinitializePhilosophesForAllAgents(philoIDsBackUp, philosEatingCountersBackUp);
-			// continue changing from here //TODONOWNOW
 			setPhiloHungry(agentList);// CB
 
 			System.out.println("Philos will run now.");

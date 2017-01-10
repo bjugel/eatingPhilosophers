@@ -1,18 +1,21 @@
 package logic;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
+import dataObjects.Philosopher;
 import logic.AgentInterface;
 import sun.management.resources.agent;
 
-public class TableSecurity implements Runnable {
+public class TableSecurityMaster implements Runnable {
 
 	private int numberOfPhilos;
 	private int numberOfAgents;
-	private double averageTimesOfEating;
+	private int averageTimesOfEating;
 	private int totalTimesOfEating;
 	private List<AgentInterface> agentList;
 	private String catchedMessage;
@@ -25,7 +28,7 @@ public class TableSecurity implements Runnable {
 	private boolean shutDown;
 	private boolean useless;
 
-	public TableSecurity(int numberOfPhilos, List<AgentInterface> agentList, int tolerance, long startTime) {
+	public TableSecurityMaster(int numberOfPhilos, List<AgentInterface> agentList, int tolerance, long startTime) {
 		this.totalTimesOfEating = 0;
 		this.averageTimesOfEating = 0;
 		this.numberOfPhilos = numberOfPhilos;
@@ -44,20 +47,30 @@ public class TableSecurity implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("TableSecurity is running now. \n\n "
+		//initialize and start securityHelper
+		for (AgentInterface agent : agentList) {
+
+			try {
+				agent.initialzeSecurityHelper(tolerance);
+				agent.startSecurityHelper();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+
+		}
+		System.out.println("TableSecurityMaster is running now. \n\n "
 				+ "           --------------------ATTENTION!!!-------------------- \n\n  "
-				+ "Everyone get catched, who eats " + (tolerance + 1) + " times more than the average philosopher.\n\n"
-				+ "Legend:\n" + "! = philosopher got catched \n" + "# = philosopher is already catched \n"
-				+ "+ = philosopher is done \n\n");
+				+ "Everyone gets catched, who eats " + (tolerance + 1) + " times more than the average philosopher.\n\n"
+				+ "\n\n");
 		while (true && !(this.useless)) {
 
-			// The table security collects all eatingCounter from the philos to
+			// The table security collects all eatingCounter from the security helpers to
 			// calculate the average times of eating.
 			numberOfPhilos=0;
 			for (AgentInterface agent : agentList) {
 
 				try {
-					totalTimesOfEating += agent.calculateTotalTimesOfEating();
+					totalTimesOfEating += agent.getTotalTimesOfEating();
 					numberOfPhilos+=agent.getNumberOfPhilos();
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -67,35 +80,15 @@ public class TableSecurity implements Runnable {
 
 			// The table security is calculating the average times of eating.
 			averageTimesOfEating = totalTimesOfEating / numberOfPhilos;
-			catchedMessage = ("The average times of eating is " + averageTimesOfEating + "\n");
+			System.out.println(("totalEatenTimes " + totalTimesOfEating + "\n"));
+			System.out.println(("numberOrPhilos " + numberOfPhilos + "\n"));
+			System.out.println(("The average times of eating is " + averageTimesOfEating + "\n"));
 
 			// The table security catches all philos, who were eating more the
 			// average philo plus the tolerance.
 			for (AgentInterface agent : agentList) {
 				try {
-					int numberOfPhilos = agent.getNumberOfPhilos();
-					for (int i = 0; i < numberOfPhilos; i++) {
-						this.philoIsDone = agent.isPhiloDone(i);
-						this.eatingCounter = agent.getPhiloEatingCounter(i);
-						this.philoIsCatched = agent.isPhiloCatched(i);
-						catchedMessage = catchedMessage + " " + eatingCounter;
-						if (eatingCounter > averageTimesOfEating + tolerance && !philoIsCatched && !philoIsDone) {
-							catchedMessage = catchedMessage + "!";
-							this.someoneGotCatched = true;
-							agent.catchPhilo(i);
-							System.out.println("Table Security catched Philo " + (agent.getPhiloID(i)));
-						} else {
-							if (!philoIsDone) {
-								if (philoIsCatched) {
-									catchedMessage = catchedMessage + "#";
-									this.philoIsCatched = false;
-								}
-							} else {
-								catchedMessage = catchedMessage + "+";
-								this.philoIsDone = false;
-							}
-						}
-					}
+					agent.giveHelperAverargeTimesOfEating(averageTimesOfEating);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 					
@@ -124,18 +117,36 @@ public class TableSecurity implements Runnable {
 			}
 
 			if (allPhilosAreDone) {
+				
 				System.out.printf("TableSecurity finished \nStarttime: \t%03d \nEndtime: \t%03d\n", startTime,
 						System.currentTimeMillis());
+				
+				for (AgentInterface agent : agentList) {
+					try {
+								for (int i = 0; i < agent.getNumberOfPhilos(); i++) {
+									System.out.print("P"+agent.getPhiloID(i)+": "+ agent.getPhiloEatingCounter(i) + "   ");
+
+								}
+								System.out.println("\n\n");
+						}
+					 catch (RemoteException e) {
+						e.printStackTrace();
+						
+					}
+				}
 				break;
 			}
 			synchronized (this) {
 				
 				if (this.shutDown) {
 					try {
+						
+						shutDownAllHelpers();
 						this.notify();//wakeup master to do his stuf and aknowledged we heard him.
 						
 						this.wait();// now wait for master to back notify us
 						this.shutDown = false;
+						wakeUpAllHelpers();
 						
 						this.notify();
 					} catch (InterruptedException e) {
@@ -146,6 +157,34 @@ public class TableSecurity implements Runnable {
 			}
 			
 			totalTimesOfEating = 0;
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void shutDownAllHelpers() {
+		for (AgentInterface agent : agentList) {
+			try {
+				agent.shutDownSecurityHelper();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void wakeUpAllHelpers() {
+		for (AgentInterface agent : agentList) {
+			try {
+				agent.wakeUpSecurityHelper();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				
+			}
 		}
 	}
 

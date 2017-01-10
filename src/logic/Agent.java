@@ -27,6 +27,7 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 	private AgentInterface nextAgent;
 	private AgentInterface previousAgent;
 	private AtomicBoolean philosDown;
+	private SecurityHelper securityHelper;
 
 	public Agent() throws RemoteException {
 		super();
@@ -38,7 +39,6 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 		this.agentID = agentID;
 		this.philosDown = new AtomicBoolean(false);
 		philoList = new ArrayList<Philosopher>();
-
 	}
 
 	/**
@@ -58,6 +58,12 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 		// testings
 	}
 
+	
+	public void initialzeSecurityHelper( int tolerance) {
+		this.securityHelper=new SecurityHelper(this, tolerance);
+		System.out.println("Agent" + agentID + " initializing SecurityHelper"); 
+	}
+	
 	/**
 	 * killer method locking first fork for a specific philosopher
 	 * 
@@ -256,7 +262,9 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 			philoList.add(p);
 		}
 	}
-	
+	public void startSecurityHelper(){
+		new Thread(this.securityHelper).start();
+	}
 	public ArrayList<TableFork> getForks() {
 		return forks;
 	}
@@ -345,12 +353,20 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 	 * @return the number of total times of eating for all philosophers at this
 	 *         agent.
 	 */
-	public int getTotalTimesOfEating() {
+	public int calculateTotalTimesOfEating() {
 		int totalTimesOfEating = 0;
 		for (Philosopher philo : philoList) {
 			totalTimesOfEating += philo.getEatingCounter();
 		}
 		return totalTimesOfEating;
+	}
+	
+	public int getTotalTimesOfEating() {		
+		return this.securityHelper.getLocalTotalPhiloEatCounter();
+	}
+	
+	public void giveHelperAverargeTimesOfEating(int average) {		
+		this.securityHelper.setAverageEatenTimes(average);
 	}
 
 	// CB
@@ -687,7 +703,30 @@ public class Agent extends UnicastRemoteObject implements AgentInterface {
 		}
 		
 	}
-
+	/**
+	 * shuts down the running security helper this method only returns if the security helper was succesfully shut down. 
+	 * 
+	 */
+	public void shutDownSecurityHelper() throws RemoteException {
+	
+		this.securityHelper.setShutDown(true);
+		//check if all philos waited
+		//while loop only returns if all are down or dead.
+		while(!securityHelper.shutdownAknowledged&& !securityHelper.isFinished()){
+			//busiwaiting nothing to be done here
+			System.out.println("looping");
+			
+		}
+		//security helper is now shut down.
+	}
+	
+	@Override
+	public void wakeUpSecurityHelper() throws RemoteException {
+		//wakes up philos. security helper. the helper manages their shutdown and acknowledged fields themselve.
+			synchronized (this.securityHelper) {
+				this.securityHelper.notify();
+			}
+	}
 	@Override
 	public void wakeUpPhilos() throws RemoteException {
 		this.philosDown.set(false);
